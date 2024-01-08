@@ -86,12 +86,12 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-rxjava2")
 
     //Compose Navigation
-    val nav_version = "2.5.3"
+    val nav_version = "2.7.6"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
 
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
