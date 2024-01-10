@@ -2,11 +2,6 @@ package com.example.toeicfantasy.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.MenuBook
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -107,10 +102,11 @@ fun BottomNavigationBar(
                             BadgedBox(
                                 badge = { Badge{ Text(item.badgeCount.toString()) } }
                             ){
-                                Icon(
-                                    item.icon,
-                                    contentDescription = item.name
-                                )
+                                    Icon(
+                                        item.icon,
+                                        contentDescription = item.name
+                                    )
+
                             }
                         }
                         else

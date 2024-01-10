@@ -8,11 +8,11 @@ import androidx.compose.material.icons.filled.People
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(
-    val name: String,
-    val route: String,
+    name: String,
+    route: String,
     val icon: ImageVector,
     val badgeCount: Int = 0
-){
+): Screen(name, route){
     data object Mission : BottomNavItem(
             name = "Mission",
             route = "mission",

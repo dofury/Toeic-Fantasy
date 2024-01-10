@@ -1,43 +1,219 @@
 package com.example.toeicfantasy.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.EMobiledata
+import androidx.compose.material.icons.filled.Paid
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.toeicfantasy.R
+import com.example.toeicfantasy.data.WordCard
+import com.example.toeicfantasy.ui.theme.whiteGray
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun MissionScreen(){
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        var selectedTabIndex by remember { mutableStateOf(0) }
-        TabRow(selectedTabIndex = selectedTabIndex) {
-            MissionTab(true) {
-                selectedTabIndex = 0
+        var selectedTabIndex by remember { mutableIntStateOf(0) }
+        Column {
+            TabRow(selectedTabIndex = selectedTabIndex) {
+                MissionTab("채용",false) {
+                    selectedTabIndex = 0
+                }
+                MissionTab("규칙,법률",false) {
+                    selectedTabIndex = 1
+                }
+                MissionTab("일반사무(1)",false) {
+                    selectedTabIndex = 2
+                }
             }
-            MissionsTab(false) {
-                selectedTabIndex = 1
+
+            when(selectedTabIndex) {
+                0 -> {
+                    MissionContents()
+                }
+                1 -> {
+                    Text("규칙")
+                }
             }
         }
+
+    }
+}
+
+@Composable
+fun MissionContents(){
+    Column() {
+        Image(
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillWidth,
+            painter = painterResource(id = R.drawable.test),
+            contentDescription = "company")
+        MissionContent(1,"회사 청소하기")
+        MissionContent(1,"회사 엎기")
     }
 }
 @Composable
-fun MissionTab(selected: Boolean,onClick: () -> Unit){
+fun MissionContent(missionId: Int,missionName: String){
+    Column(
+        modifier = Modifier.padding(8.dp)
+    ) {
+        Text(missionName)
+        Box(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)) {
+            Divider(
+                color = Color.Gray,
+                thickness = 1.dp
+            )
+        }
+
+        MissionProgressBar()
+        Row {
+            Card {
+                
+            }
+        }
+        
+    }
+    Divider(
+        color = Color.Gray,
+        thickness = 1.dp
+    )
+}
+
+
+@Composable
+fun MissionProgressBar(){
+    var currentProgress by remember { mutableFloatStateOf(0f) }
+    var loading by remember { mutableStateOf(false)}
+    val scope = rememberCoroutineScope()// Create Coroutine Scope
+    var count by remember { mutableIntStateOf(0)}
+
+    val a = Pair("g","g")
+    val h = mapOf(a)
+    Column(
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        if(loading){
+            LinearProgressIndicator(
+                progress = currentProgress,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                IconTextBox("Point",Icons.Filled.Paid,100)
+                Spacer(Modifier.height(4.dp))
+                IconTextBox("Exp",Icons.Filled.EMobiledata,10)
+            }
+            Button(
+                modifier =Modifier
+                    .height(IntrinsicSize.Min),
+                shape = RoundedCornerShape(4.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = whiteGray, contentColor = Color.Blue),
+                onClick = {
+                loading = true
+                scope.launch {
+                    loadProgress {progress->
+                        currentProgress = progress
+                    }
+                    loading = false
+                    count++
+
+                }
+            },
+                enabled = !loading){
+                Text("Run")
+            }
+
+        }
+
+
+
+        Text(count.toString())
+
+    }
+}
+
+@Composable
+private fun IconTextBox(name: String, image: ImageVector, value: Int) {
+    Row(
+        modifier = Modifier
+            .width(64.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(whiteGray)
+            .padding(4.dp)
+    ) {
+        Icon(
+            imageVector = image,
+            contentDescription = name
+        )
+        Text(value.toString())
+    }
+}
+
+suspend fun loadProgress(updateProgress: (Float) -> Unit){
+    for (i in 1..100) {
+        updateProgress(i.toFloat() / 100)
+        delay(10)
+    }
+}
+@Composable
+fun MissionTab(name: String,selected: Boolean,onClick: () -> Unit){
     Tab(selected, onClick) {
         Column(
             Modifier
@@ -54,7 +230,7 @@ fun MissionTab(selected: Boolean,onClick: () -> Unit){
                     )
             )
             Text(
-                text = "hi",
+                text = name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -62,7 +238,7 @@ fun MissionTab(selected: Boolean,onClick: () -> Unit){
     }
 }
 @Composable
-fun MissionsTab(selected: Boolean,onClick: () -> Unit){
+fun MissionsTab(name: String,selected: Boolean,onClick: () -> Unit){
     Tab(selected, onClick) {
         Column(
             Modifier
@@ -79,7 +255,7 @@ fun MissionsTab(selected: Boolean,onClick: () -> Unit){
                     )
             )
             Text(
-                text = "bi",
+                text = name,
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )

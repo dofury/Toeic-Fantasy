@@ -12,5 +12,6 @@ fun ProfileScreen(){
         modifier = Modifier.fillMaxSize()
     ) {
         Text("Profile")
+
     }
 }
