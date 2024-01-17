@@ -11,6 +11,6 @@ fun DuelScreen(){
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Text("Duel")
+        Text("테스트 수정 문서입니다")
     }
 }

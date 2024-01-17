@@ -8,21 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.EMobiledata
 import androidx.compose.material.icons.filled.Paid
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -46,11 +44,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.toeicfantasy.R
-import com.example.toeicfantasy.data.WordCard
+import com.example.toeicfantasy.data.Mission
+import com.example.toeicfantasy.data.Stage1
 import com.example.toeicfantasy.ui.theme.whiteGray
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -66,9 +64,11 @@ fun MissionScreen(){
                 MissionTab("채용",false) {
                     selectedTabIndex = 0
                 }
+
                 MissionTab("규칙,법률",false) {
                     selectedTabIndex = 1
                 }
+
                 MissionTab("일반사무(1)",false) {
                     selectedTabIndex = 2
                 }
@@ -89,22 +89,28 @@ fun MissionScreen(){
 
 @Composable
 fun MissionContents(){
-    Column() {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+    ) {
         Image(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             contentScale = ContentScale.FillWidth,
             painter = painterResource(id = R.drawable.test),
             contentDescription = "company")
-        MissionContent(1,"회사 청소하기")
-        MissionContent(1,"회사 엎기")
+
+        MissionContent(Stage1.C101)
+        MissionContent(Stage1.C102)
+        MissionContent(Stage1.C103)
     }
 }
 @Composable
-fun MissionContent(missionId: Int,missionName: String){
+fun MissionContent(mission: Mission){
     Column(
         modifier = Modifier.padding(8.dp)
     ) {
-        Text(missionName)
+        Text(mission.name)
         Box(modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)) {
             Divider(
                 color = Color.Gray,
@@ -112,7 +118,7 @@ fun MissionContent(missionId: Int,missionName: String){
             )
         }
 
-        MissionProgressBar()
+        MissionProgressBar(mission)
         Row {
             Card {
                 
@@ -128,14 +134,12 @@ fun MissionContent(missionId: Int,missionName: String){
 
 
 @Composable
-fun MissionProgressBar(){
+fun MissionProgressBar(mission: Mission){
     var currentProgress by remember { mutableFloatStateOf(0f) }
     var loading by remember { mutableStateOf(false)}
     val scope = rememberCoroutineScope()// Create Coroutine Scope
     var count by remember { mutableIntStateOf(0)}
 
-    val a = Pair("g","g")
-    val h = mapOf(a)
     Column(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,9 +160,9 @@ fun MissionProgressBar(){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                IconTextBox("Point",Icons.Filled.Paid,100)
+                IconTextBox("Point",Icons.Filled.Paid,mission.point)
                 Spacer(Modifier.height(4.dp))
-                IconTextBox("Exp",Icons.Filled.EMobiledata,10)
+                IconTextBox("Exp",Icons.Filled.EMobiledata,mission.exp)
             }
             Button(
                 modifier =Modifier
@@ -209,7 +213,7 @@ private fun IconTextBox(name: String, image: ImageVector, value: Int) {
 suspend fun loadProgress(updateProgress: (Float) -> Unit){
     for (i in 1..100) {
         updateProgress(i.toFloat() / 100)
-        delay(10)
+        delay(5)
     }
 }
 @Composable
